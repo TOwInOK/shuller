@@ -1,4 +1,4 @@
-use crate::link::link::{Link, MakeLink};
+use crate::link::{make_link::MakeLink, Link};
 
 use super::rule::Rule34;
 
@@ -7,9 +7,7 @@ use super::rule::Rule34;
 /// # Example
 ///
 /// ```
-/// use crate::shuller::params::rule::Rule34;
-/// use shuller::params::params::Params;
-/// use crate::shuller::link::link::MakeLink;
+/// use shuller::prelude::*;
 ///
 /// let instance = Params::init()
 ///     .negative_tags(vec!["ai_generated"])
@@ -18,7 +16,7 @@ use super::rule::Rule34;
 ///     .page(3)
 ///     .make_link();
 /// ```
-/// `instance` is { url: `<https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&tags=anime base sunglasses -ai_generated&json=1&limit=5&pid=2>` }
+/// `instance` is { url: `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&tags=anime base sunglasses -ai_generated&json=1&limit=5&pid=2` }
 #[derive(PartialEq, Debug)]
 pub struct Params<'a> {
     /// Default value for api
@@ -28,18 +26,19 @@ pub struct Params<'a> {
     s: &'a str,
     /// Default value for api
     q: &'a str,
-    /// Tags, main tool for search
-    positive_tags: Vec<&'a str>,
-    negative_tags: Vec<&'a str>,
+    /// Positive tags
+    pub positive_tags: Vec<&'a str>,
+    /// Negative tags (`"-"` sets automaticly)
+    pub negative_tags: Vec<&'a str>,
     /// Default value for lib
     json: bool,
     /// Limit of links in response MAX: 1000
     /// By default = 1
-    limit: u16,
-    /// Page
+    pub limit: u16,
+    /// Start page to search (1 page = 10 pictures)
     /// By default = 1
     // pid
-    page: u16,
+    pub page: u16,
 }
 
 impl Default for Params<'_> {
@@ -63,8 +62,7 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// Set positive tags
     ///
     /// ```
-    /// use crate::shuller::params::rule::Rule34;
-    /// use shuller::params::params::Params;
+    /// use shuller::prelude::*;
     ///
     /// let result = Params::init()
     ///     .positive_tags(vec!["molly"]);
@@ -77,8 +75,7 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// Set negative tags
     ///
     /// ```
-    /// use crate::shuller::params::rule::Rule34;
-    /// use shuller::params::params::Params;
+    /// use shuller::prelude::*;
     ///
     /// let result = Params::init()
     ///     .negative_tags(vec!["ai_generated"]);
@@ -93,8 +90,7 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// max limit <=1000
     ///
     /// ```
-    /// use crate::shuller::params::rule::Rule34;
-    /// use shuller::params::params::Params;
+    /// use shuller::prelude::*;
     ///
     /// let result = Params::init()
     ///     .limit(2);
@@ -115,8 +111,7 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// start page for find pictures
     ///
     /// ```
-    /// use crate::shuller::params::rule::Rule34;
-    /// use shuller::params::params::Params;
+    /// use shuller::prelude::*;
     ///
     /// let result = Params::init()
     ///     .page(2);
@@ -137,18 +132,14 @@ impl MakeLink for Params<'_> {
     ///
     /// #### Simple example
     /// ```
-    /// use crate::shuller::params::rule::Rule34;
-    /// use shuller::params::params::Params;
-    /// use crate::shuller::link::link::MakeLink;
+    /// use shuller::prelude::*;
     ///
     /// let result = Params::init().make_link();
     ///
     /// ```
     /// #### Basic example
     /// ```
-    /// use shuller::params::params::Params;
-    /// use crate::shuller::params::rule::Rule34;
-    /// use crate::shuller::link::link::MakeLink;
+    /// use shuller::prelude::*;
     ///
     /// let result = Params::init()
     ///     .positive_tags(vec![":)"])
