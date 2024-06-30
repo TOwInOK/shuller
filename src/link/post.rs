@@ -49,6 +49,47 @@ pub struct Post {
     // pub comment_count: i64,
 }
 
+/// Less info struct of [`Post`]
+#[derive(Debug)]
+pub struct MiniPost<'a> {
+    pub id: u64,
+    /// picture in miniature
+    pub preview_url: &'a str,
+    /// picture resized by default
+    /// W - `sample_wight`
+    /// H - `sample_hight`
+    pub sample_url: &'a str,
+    /// raw picture
+    /// W - `wight`
+    /// H - `hight`
+    pub file_url: &'a str,
+    /// W of raw picture (`file_url`)
+    pub width: u64,
+    /// H of raw picture (`file_url`)
+    pub height: u64,
+    /// H of `sample_picture`
+    pub sample_height: u64,
+    /// W of `sample_picture`
+    pub sample_width: u64,
+    pub tags: Vec<&'a str>,
+}
+
+impl<'a> Into<MiniPost<'a>> for &'a Post {
+    fn into(self) -> MiniPost<'a> {
+        MiniPost {
+            id: self.id as u64,
+            preview_url: &self.preview_url,
+            sample_url: &self.sample_url,
+            file_url: &self.file_url,
+            width: self.width as u64,
+            height: self.height as u64,
+            sample_height: self.sample_height as u64,
+            sample_width: self.sample_width as u64,
+            tags: self.tags.split(' ').collect(),
+        }
+    }
+}
+
 impl Posts {
     /// get `preview_url` of all posts
     ///
@@ -93,6 +134,32 @@ impl Posts {
         let mut urls: Vec<&str> = vec![];
         self.0.iter().for_each(|x| urls.push(&x.file_url));
         urls
+    }
+
+    /// Get [`MiniPost`] of all posts
+    /// ```
+    /// use shuller::prelude::*;
+    ///
+    /// async fn dwl() {
+    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let result = binding.get_urls_ext();
+    /// }
+    /// ```
+    pub fn get_urls_ext(&self) -> Vec<MiniPost> {
+        self.0.iter().map(|x| x.into()).collect()
+    }
+
+    /// Get first [`MiniPost`] of all posts
+    /// ```
+    /// use shuller::prelude::*;
+    ///
+    /// async fn dwl() {
+    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let result = binding.get_url_ext();
+    /// }
+    /// ```
+    pub fn get_url_ext(&self) -> Option<MiniPost> {
+        self.0.first().map(|x| x.into())
     }
 
     /// get first `preview_url`

@@ -2,7 +2,7 @@
 name = "shuller"
 description = "Lib to get links to images for your favourite tags on rule34 and any"
 repository = "https://github.com/TOwInOK/shuller"
-version = "1.0.2"
+version = "1.0.3"
 edition = "2021"
 authors = ["TOwInOK"]
 license = "MIT"
