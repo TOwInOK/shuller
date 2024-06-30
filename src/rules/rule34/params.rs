@@ -39,6 +39,8 @@ pub struct Params<'a> {
     /// By default = 1
     // pid
     pub page: u16,
+    /// id of post
+    pub id: Option<usize>,
 }
 
 impl Default for Params<'_> {
@@ -54,6 +56,7 @@ impl Default for Params<'_> {
             limit: 1,
             // pid
             page: 1,
+            id: None,
         }
     }
 }
@@ -121,6 +124,19 @@ impl<'a> Rule34<'a> for Params<'a> {
         self.page = page;
         self
     }
+
+    /// Set id of post
+    /// ```
+    /// use shuller::prelude::*;
+    ///
+    /// let result = Params::init()
+    ///     .id(2);
+    ///
+    /// ```
+    fn id(mut self, id: usize) -> Self {
+        self.id = Some(id);
+        self
+    }
 }
 
 impl MakeLink for Params<'_> {
@@ -149,7 +165,32 @@ impl MakeLink for Params<'_> {
     ///     .make_link();
     ///
     /// ```
+    /// #### Example with id
+    ///
+    /// We may not use other options since we use the specific id
+    /// ```
+    /// use shuller::prelude::*;
+    ///
+    /// let result = Params::init()
+    ///     .id(99999)
+    ///     .make_link();
+    ///
+    /// ```
     fn make_link(&self) -> Link {
+        if let Some(id) = self.id {
+            return Link::init(format!(
+                "https://api.rule34.xxx/index.php?page={}&s={}&q={}&tags={}&json={}&limit={}&pid={}&id={}",
+                self.p,
+                self.s,
+                self.q,
+                self.tags_suppress(),
+                self.json_convert(),
+                self.limit,
+                self.page,
+                id
+            ));
+        }
+
         Link::init(format!(
             "https://api.rule34.xxx/index.php?page={}&s={}&q={}&tags={}&json={}&limit={}&pid={}",
             self.p,
@@ -204,9 +245,30 @@ mod tests {
                 json: true,
                 limit: 1,
                 page: 1,
+                id: None
             }
         );
     }
+
+    #[test]
+    fn init_with_id() {
+        let result = Params::init().id(2);
+        assert_eq!(
+            result,
+            Params {
+                p: "dapi",
+                s: "post",
+                q: "index",
+                positive_tags: vec![],
+                negative_tags: vec![],
+                json: true,
+                limit: 1,
+                page: 1,
+                id: Some(2)
+            }
+        );
+    }
+
     #[test]
     fn positive_params() {
         let result = Params::init().positive_tags(vec!["test"]);
@@ -221,6 +283,7 @@ mod tests {
                 json: true,
                 limit: 1,
                 page: 1,
+                id: None
             }
         );
     }
@@ -238,6 +301,7 @@ mod tests {
                 json: true,
                 limit: 1,
                 page: 1,
+                id: None
             }
         );
     }
@@ -255,6 +319,7 @@ mod tests {
                 json: true,
                 limit: 30,
                 page: 1,
+                id: None
             }
         );
     }
@@ -272,6 +337,7 @@ mod tests {
                 json: true,
                 limit: 1000,
                 page: 1,
+                id: None
             }
         );
     }
@@ -302,6 +368,7 @@ mod tests {
                 json: true,
                 limit: 1,
                 page: 30,
+                id: None
             }
         );
     }

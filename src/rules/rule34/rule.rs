@@ -24,6 +24,9 @@ where
     /// max limit <=1000
     fn limit(self, limit: u16) -> Self;
 
+    /// # Set id of post
+    fn id(self, id: usize) -> Self;
+
     /// # start page for find pictures
     fn page(self, page: u16) -> Self;
 }

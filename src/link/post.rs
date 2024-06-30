@@ -143,4 +143,17 @@ mod tests {
         let result = binding.get_f_urls();
         println!("{:#?}", result)
     }
+
+    #[tokio::test]
+    async fn create_make_link_search_with_id() {
+        //fishey fishey
+        let binding: Posts = Params::init()
+            .id(10542274)
+            .make_link()
+            .search()
+            .await
+            .unwrap();
+        let result = binding.get_f_urls();
+        println!("{:#?}", result)
+    }
 }
