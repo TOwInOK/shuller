@@ -1,0 +1,9 @@
+[package]
+name = "rulelib"
+version = "0.0.1"
+edition = "2021"
+authors = ["TOwInOK"]
+license = "MIT"
+
+[dependencies]
+reqwest = "0.12.5"
