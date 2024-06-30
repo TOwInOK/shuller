@@ -19,3 +19,19 @@ async fn example() {
        println!("{:#?}", instance.get_s_urls())
     }
 ```
+
+## Example usage with id
+
+```rust
+async fn example() {
+      use shuller::prelude::*;
+
+      let instance: Posts = Params::init()
+           .id(10542274)
+           .make_link()
+           .search()
+           .await
+           .unwrap(); // or handle error
+       println!("{:#?}", instance.get_s_urls())
+    }
+```
