@@ -1,12 +1,20 @@
 [package]
 name = "shuller"
-version = "0.0.1"
+description = "Lib to get links to images for your favourite tags on rule34 and any"
+repository = "https://github.com/TOwInOK/shuller"
+version = "1.0.0"
 edition = "2021"
 authors = ["TOwInOK"]
-license = "MIT"
+license-file = "LICENSE"
+readme = "README.md"
+keywords = ["async", "networking", "http", "rule34"]
+categories = ["asynchronous", "web-programming", "parsing", "network-programming", "api-bindings"]
+documentation = "https://docs.rs/shuller"
 
 
 [dependencies]
 reqwest = { version = "0.12.5", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
+
+[dev-dependencies]
 tokio = { version = "1.38.0", features = ["macros"] }

@@ -36,6 +36,11 @@
 /// ```
 pub mod link;
 /// Rules for making links
+///
+/// If you want to create you own rules
+/// just add Trait [`crate::link::make_link::MakeLink`]
+/// and for output structure you can create own struct which implemented [`serde::de`]
+/// as example see [`crate::link::Link::search`]
 pub mod rules;
 
 /// Very cool feature

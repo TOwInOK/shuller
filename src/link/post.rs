@@ -138,7 +138,7 @@ mod tests {
     use crate::prelude::*;
 
     #[tokio::test]
-    async fn dwl() {
+    async fn create_make_link_search() {
         let binding: Posts = Params::init().make_link().search().await.unwrap();
         let result = binding.get_f_urls();
         println!("{:#?}", result)

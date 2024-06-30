@@ -31,7 +31,7 @@ impl Link {
     /// use shuller::prelude::*;
     ///
     /// async fn print_posts() {
-    ///     let posts: Result<Posts, reqwest::Error> = Params::init().make_link().search().await;
+    ///     let posts: Result<Posts, reqwest::Error> = Link::init("VeryCoolLink".to_string()).search().await;
     ///     match posts {
     ///         Ok(posts) => {
     ///             println!("Posts: {:#?}", posts);
