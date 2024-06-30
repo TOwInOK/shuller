@@ -82,11 +82,14 @@ impl Posts {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule34::{params::Params, rule::Rule34};
+    use crate::{
+        link::link::MakeLink,
+        params::{params::Params, rule::Rule34},
+    };
 
     #[tokio::test]
     async fn dwl() {
-        let binding = Params::init().build().search().await.unwrap();
+        let binding = Params::init().make_link().search().await.unwrap();
         let result = binding.get_f_urls();
         println!("{:#?}", result)
     }

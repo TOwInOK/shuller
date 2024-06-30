@@ -645,15 +645,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rulelib"
-version = "0.0.1"
-dependencies = [
- "reqwest",
- "serde",
- "tokio",
-]
-
-[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -791,6 +782,15 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "shuller"
+version = "0.0.1"
+dependencies = [
+ "reqwest",
+ "serde",
+ "tokio",
 ]
 
 [[package]]

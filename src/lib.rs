@@ -1,2 +1,3 @@
-mod link;
-mod rule34;
+/// # Links & Posts
+pub mod link;
+pub mod params;
