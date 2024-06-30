@@ -1,11 +1,11 @@
 use serde::Deserialize;
 use serde::Serialize;
 
-/// # List of Posts
+/// # List of [`Posts`]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Posts(Vec<Post>);
 
-/// # Post structure
+/// # [`Post`] structure
 ///
 /// * Post in our context of image structure which contain some urls
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

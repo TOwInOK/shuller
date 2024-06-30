@@ -1,9 +1,5 @@
 /// Trait for making `Link`
 pub mod make_link;
-/// Picture structure
-///
-/// Contain url's of cdn
-pub mod post;
 
 use serde::Deserialize;
 

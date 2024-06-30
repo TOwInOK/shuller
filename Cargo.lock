@@ -786,7 +786,7 @@ dependencies = [
 
 [[package]]
 name = "shuller"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "reqwest",
  "serde",

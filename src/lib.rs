@@ -41,15 +41,17 @@ pub mod link;
 /// just add Trait [`crate::link::make_link::MakeLink`]
 /// and for output structure you can create own struct which implemented [`serde::de`]
 /// as example see [`crate::link::Link::search`]
+/// also you can check [`crate::rules::rule34::data`]
 pub mod rules;
 
 /// Very cool feature
 #[allow(unused)]
 pub mod prelude {
     pub use crate::link::make_link::MakeLink;
-    pub use crate::link::post::Post;
-    pub use crate::link::post::Posts;
     pub use crate::link::Link;
+    pub use crate::rules::rule34::data::MiniPost;
+    pub use crate::rules::rule34::data::Post;
+    pub use crate::rules::rule34::data::Posts;
     pub use crate::rules::rule34::params::Params;
     pub use crate::rules::rule34::rule::Rule34;
 }
