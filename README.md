@@ -1,6 +1,6 @@
 # Shuller
 
-Library for fetching links from Rule34 and other sites that can be implemented
+Library for link fetching from Rule34 and other implementable sites
 
 ## Example usage
 
