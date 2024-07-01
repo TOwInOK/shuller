@@ -97,7 +97,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_p_urls();
     /// }
     /// ```
@@ -112,7 +112,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_s_urls();
     /// }
     /// ```
@@ -126,7 +126,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_f_urls();
     /// }
     /// ```
@@ -141,7 +141,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_urls_ext();
     /// }
     /// ```
@@ -154,7 +154,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_url_ext();
     /// }
     /// ```
@@ -167,7 +167,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_p_url();
     /// }
     /// ```
@@ -179,7 +179,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_s_url();
     /// }
     /// ```
@@ -191,7 +191,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().make_link().search().await.unwrap();
+    ///     let binding: Posts = Params::init().search().await.unwrap();
     ///     let result = binding.get_f_url();
     /// }
     /// ```
@@ -206,7 +206,7 @@ mod tests {
 
     #[tokio::test]
     async fn create_make_link_search() {
-        let binding: Posts = Params::init().make_link().search().await.unwrap();
+        let binding: Posts = Params::init().search().await.unwrap();
         let result = binding.get_f_urls();
         println!("{:#?}", result)
     }
@@ -214,12 +214,7 @@ mod tests {
     #[tokio::test]
     async fn create_make_link_search_with_id() {
         //fishey fishey
-        let binding: Posts = Params::init()
-            .id(10542274)
-            .make_link()
-            .search()
-            .await
-            .unwrap();
+        let binding: Posts = Params::init().id(10542274).search().await.unwrap();
         let result = binding.get_f_urls();
         println!("{:#?}", result)
     }

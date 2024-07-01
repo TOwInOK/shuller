@@ -13,8 +13,11 @@ documentation = "https://docs.rs/shuller"
 
 
 [dependencies]
+async-trait = "0.1.80"
 reqwest = { version = "0.12.5", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
+thiserror = "1.0.61"
+url = "2.5.2"
 
 [dev-dependencies]
 tokio = { version = "1.38.0", features = ["macros"] }

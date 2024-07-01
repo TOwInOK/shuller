@@ -30,5 +30,3 @@ where
     /// # start page for find pictures
     fn page(self, page: u16) -> Self;
 }
-
-// Any rules?

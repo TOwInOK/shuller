@@ -1,4 +1,6 @@
-use crate::link::{make_link::MakeLink, Link};
+use reqwest::Url;
+
+use crate::{link::make_link::MakeLink, prelude::Search};
 
 use super::rule::Rule34;
 
@@ -176,33 +178,38 @@ impl MakeLink for Params<'_> {
     ///     .make_link();
     ///
     /// ```
-    fn make_link(&self) -> Link {
+    fn make_link(&self) -> crate::error::Result<Url> {
         if let Some(id) = self.id {
-            return Link::init(format!(
-                "https://api.rule34.xxx/index.php?page={}&s={}&q={}&tags={}&json={}&limit={}&pid={}&id={}",
-                self.p,
-                self.s,
-                self.q,
-                self.tags_suppress(),
-                self.json_convert(),
-                self.limit,
-                self.page,
-                id
-            ));
+            return Ok(Url::parse_with_params(
+                "https://api.rule34.xxx/index.php?",
+                [
+                    ("page", self.p),
+                    ("s", self.s),
+                    ("q", self.q),
+                    ("tags", self.tags_suppress().as_ref()),
+                    ("json", self.json_convert().to_string().as_ref()),
+                    ("limit", self.limit.to_string().as_ref()),
+                    ("pid", self.page.to_string().as_ref()),
+                    ("id", id.to_string().as_ref()),
+                ],
+            )?);
         }
-
-        Link::init(format!(
-            "https://api.rule34.xxx/index.php?page={}&s={}&q={}&tags={}&json={}&limit={}&pid={}",
-            self.p,
-            self.s,
-            self.q,
-            self.tags_suppress(),
-            self.json_convert(),
-            self.limit,
-            self.page
-        ))
+        Ok(Url::parse_with_params(
+            "https://api.rule34.xxx/index.php?",
+            [
+                ("page", self.p),
+                ("s", self.s),
+                ("q", self.q),
+                ("tags", self.tags_suppress().as_ref()),
+                ("json", self.json_convert().to_string().as_ref()),
+                ("limit", self.limit.to_string().as_ref()),
+                ("pid", self.page.to_string().as_ref()),
+            ],
+        )?)
     }
 }
+
+impl Search for Params<'_> {}
 
 impl Params<'_> {
     /// Combination 2 lists of tags in one for query
@@ -379,11 +386,22 @@ mod tests {
             .positive_tags(vec!["anime", "base", "sunglasses"])
             .limit(5)
             .page(2)
-            .make_link();
-        let expected = Link::init(format!(
-            "https://api.rule34.xxx/index.php?page={}&s={}&q={}&tags={}&json={}&limit={}&pid={}",
-            "dapi", "post", "index", "anime base sunglasses -ai_generated", 1, 5, 2
-        ));
+            .make_link()
+            .unwrap();
+        let expected = Url::parse_with_params(
+            "https://api.rule34.xxx/index.php?",
+            [
+                ("page", "dapi"),
+                ("s", "post"),
+                ("q", "index"),
+                ("tags", "anime base sunglasses -ai_generated"),
+                ("json", "1"),
+                ("limit", "5"),
+                ("pid", "2"),
+            ],
+        )
+        .unwrap();
+
         assert_eq!(result, expected)
     }
 }

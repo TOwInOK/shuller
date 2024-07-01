@@ -1,8 +1,13 @@
-use super::Link;
+use reqwest::Url;
+
+use crate::error::Result;
 
 /// # Build
 ///
 /// Creates a `Link` for making request.
-pub trait MakeLink {
-    fn make_link(&self) -> Link;
+pub trait MakeLink
+where
+    Self: Send + Sync,
+{
+    fn make_link(&self) -> Result<Url>;
 }
