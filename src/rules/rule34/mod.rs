@@ -69,8 +69,6 @@ macro_rules! rule34 {
         (; $($id:expr)?) => {{
             let params = Params::init()
             $(.id($id))?;
-
-
             Rules::Rule34(params)
         }
     };

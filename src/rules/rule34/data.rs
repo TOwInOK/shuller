@@ -1,14 +1,13 @@
 use serde::Deserialize;
-use serde::Serialize;
 
 /// # List of [`Posts`]
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize)]
 pub struct Posts(Vec<Post>);
 
 /// # [`Post`] structure
 ///
 /// * Post in our context of image structure which contain some urls
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize)]
 pub struct Post {
     /// picture in miniature
     pub preview_url: String,
@@ -74,18 +73,18 @@ pub struct MiniPost<'a> {
     pub tags: Vec<&'a str>,
 }
 
-impl<'a> Into<MiniPost<'a>> for &'a Post {
-    fn into(self) -> MiniPost<'a> {
+impl<'a> From<&'a Post> for MiniPost<'a> {
+    fn from(val: &'a Post) -> Self {
         MiniPost {
-            id: self.id as u64,
-            preview_url: &self.preview_url,
-            sample_url: &self.sample_url,
-            file_url: &self.file_url,
-            width: self.width as u64,
-            height: self.height as u64,
-            sample_height: self.sample_height as u64,
-            sample_width: self.sample_width as u64,
-            tags: self.tags.split(' ').collect(),
+            id: val.id as u64,
+            preview_url: &val.preview_url,
+            sample_url: &val.sample_url,
+            file_url: &val.file_url,
+            width: val.width as u64,
+            height: val.height as u64,
+            sample_height: val.sample_height as u64,
+            sample_width: val.sample_width as u64,
+            tags: val.tags.split(' ').collect(),
         }
     }
 }
