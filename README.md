@@ -31,7 +31,7 @@ async fn example() {
         )
         .download()
         .await
-        .unwrap();
+        .unwrap(); // handle error
     }
     ```
   * Fetch data structure Posts, macro include
@@ -44,7 +44,7 @@ async fn example() {
             limit = 2,
             page = 2
         )
-        .unwrap();
+        .unwrap(); // handle error
     }
     ```
   * Generate Url via macro, it's just url.
