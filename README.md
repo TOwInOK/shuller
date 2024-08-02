@@ -2,7 +2,7 @@
 
 Library for link fetching from Rule34 and other implementable sites
 
-**Note** for learn more info about this lib check [doc.rs on crates.io](crates.io/crates/shuller)
+**Note** for learn more info about this lib check [doc.rs on crates.io](https://crates.io/crates/shuller)
 
 # Example __**(use macro instead)**__
 ```rust
