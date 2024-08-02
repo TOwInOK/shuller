@@ -59,12 +59,12 @@ async fn example() {
         );
     }
     ```
-    * Generate random Params and Url, and download Post with random id
-      ```rust
-      use shuller::prelude::*;
-        async fn r() {
-            let params = R34!(R;);
-            let url = R34!(R; D);
-            let posts = R34!(R; U).unwrap(); // handle error
-        }
-      ```
+  * Generate random Params and Url, and download Post with random id
+    ```rust
+    use shuller::prelude::*;
+      async fn r() {
+          let params = R34!(R;);
+          let url = R34!(R; D);
+          let posts = R34!(R; U).unwrap(); // handle error
+      }
+    ```
