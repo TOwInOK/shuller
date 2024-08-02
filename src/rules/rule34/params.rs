@@ -48,6 +48,22 @@ impl MakeLink for R34Params<'_> {
     fn url_generate(&self) -> Url {
         let url = "https://api.rule34.xxx/index.php";
         let tags = tag_suppress!(self.positive_tags, self.negative_tags);
+        if let Some(id) = self.id {
+            return Url::parse_with_params(
+                url,
+                &[
+                    ("page", self.p),
+                    ("s", self.s),
+                    ("q", self.q),
+                    ("tags", &tags),
+                    ("json", toggler!(self.json)),
+                    ("limit", self.limit.to_string().as_ref()),
+                    ("pid", self.page.to_string().as_ref()),
+                    ("id", id.to_string().as_ref()),
+                ],
+            )
+            .expect("Failed to parse URL with params");
+        }
         Url::parse_with_params(
             url,
             &[

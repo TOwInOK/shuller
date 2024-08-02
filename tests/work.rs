@@ -83,7 +83,9 @@ mod tests {
     #[tokio::test]
     async fn test_macro_random_download() {
         let instance = R34!(R; D).unwrap();
-        let url = uller::Url::parse(instance.get_f_url().unwrap()).unwrap();
-        assert!(url.is_special())
+        let url = instance.get_f_url().unwrap();
+        let instance1 = R34!(R; D).unwrap();
+        let url1 = instance1.get_f_url().unwrap();
+        assert_ne!(url, url1);
     }
 }
