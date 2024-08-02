@@ -20,10 +20,7 @@ documentation = "https://docs.rs/shuller"
 
 [dependencies]
 async-trait = "0.1.80"
-syn = "2.0.68"
-reqwest = { version = "0.12.5", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
-thiserror = "1.0.61"
 uller = { version = "0.1.22", features = ["juller"] }
 url = "2.5.2"
 rand = "0.8.5"

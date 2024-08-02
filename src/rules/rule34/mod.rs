@@ -69,8 +69,8 @@ pub mod params;
 ///     use shuller::prelude::*;
 ///     async fn r() {
 ///         let params = R34!(R;);
-///         let url = R34!(R; D);
-///         let posts = R34!(R; U).unwrap();
+///         let url = R34!(R; D).unwrap();
+///         let posts = R34!(R; U);
 ///     }
 ///     ```
 #[macro_export]
