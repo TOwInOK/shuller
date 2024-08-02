@@ -1,24 +1,33 @@
-use reqwest::Url;
-
-use crate::prelude::*;
-
 /// This is `Rule34`'s rule to create `Link`s
 pub mod rule34;
 
-/// Multi build provider
-pub enum Rules<'a> {
-    Rule34(rule34::params::Params<'a>),
-    // other rules or sites
-    Other(Box<dyn MakeLink + 'a>),
+/// Concat 2 arraes into 1 [String] with adding "-" for itch item in second array
+///
+/// **inputs**: array - [Vec<&str>]||[`Vec<String>`] narray - [Vec<&str>]||[`Vec<String>`]
+///
+/// **out** - [String]
+#[macro_export]
+macro_rules! tag_suppress {
+    ($array:expr, $narray:expr) => {{
+        let nt: Vec<String> = $narray.iter().map(|x| format!("-{}", x)).collect();
+        let nt = nt.join(" ");
+        let pt = $array.join(" ");
+        format!("{} {}", pt, nt)
+    }};
 }
 
-impl MakeLink for Rules<'_> {
-    fn make_link(&self) -> Result<Url> {
-        match &self {
-            Rules::Rule34(x) => x.make_link(),
-            Rules::Other(x) => x.make_link(),
+/// Bool converter to [str]
+///
+/// **input** - [bool]
+///
+/// **out** - [str]
+#[macro_export]
+macro_rules! toggler {
+    ($toggle:expr) => {
+        if $toggle {
+            "1"
+        } else {
+            "0"
         }
-    }
+    };
 }
-
-impl Search for Rules<'_> {}

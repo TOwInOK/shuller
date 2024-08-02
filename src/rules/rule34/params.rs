@@ -1,9 +1,8 @@
-use reqwest::Url;
-
-use crate::{link::make_link::MakeLink, prelude::Search};
-
-use super::rule::Rule34;
-
+use crate::rules::rule34::data::Posts;
+use crate::tag_suppress;
+use crate::toggler;
+use async_trait::async_trait;
+use uller::{JsonDownload, MakeLink, Url};
 /// Rule 34 params
 ///
 /// # Example
@@ -11,23 +10,23 @@ use super::rule::Rule34;
 /// ```
 /// use shuller::prelude::*;
 ///
-/// let instance = Params::init()
+/// let instance = R34Params::init()
 ///     .negative_tags(vec!["ai_generated"])
 ///     .positive_tags(vec!["anime", "base", "sunglasses"])
 ///     .limit(1)
 ///     .page(3)
-///     .make_link();
+///     .url_generate();
 /// ```
-/// `instance` is { url: `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&tags=anime base sunglasses -ai_generated&json=1&limit=5&pid=2` }
+/// **instance** is { url: `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&tags=anime base sunglasses -ai_generated&json=1&limit=5&pid=2` }
 #[derive(PartialEq, Debug)]
-pub struct Params<'a> {
+pub struct R34Params<'a> {
     /// Default value for api
     // page
-    p: &'a str,
+    p: &'static str,
     /// Default value for api
-    s: &'a str,
+    s: &'static str,
     /// Default value for api
-    q: &'a str,
+    q: &'static str,
     /// Positive tags
     pub positive_tags: Vec<&'a str>,
     /// Negative tags (`"-"` sets automaticly)
@@ -41,11 +40,31 @@ pub struct Params<'a> {
     /// By default = 1
     // pid
     pub page: u16,
-    /// id of post
+    // id of post
     pub id: Option<usize>,
 }
 
-impl Default for Params<'_> {
+impl MakeLink for R34Params<'_> {
+    fn url_generate(&self) -> Url {
+        let url = "https://api.rule34.xxx/index.php";
+        let tags = tag_suppress!(self.positive_tags, self.negative_tags);
+        Url::parse_with_params(
+            url,
+            &[
+                ("page", self.p),
+                ("s", self.s),
+                ("q", self.q),
+                ("tags", &tags),
+                ("json", toggler!(self.json)),
+                ("limit", self.limit.to_string().as_ref()),
+                ("pid", self.page.to_string().as_ref()),
+            ],
+        )
+        .expect("Failed to parse URL with params")
+    }
+}
+
+impl Default for R34Params<'_> {
     fn default() -> Self {
         Self {
             // page
@@ -63,17 +82,23 @@ impl Default for Params<'_> {
     }
 }
 
-impl<'a> Rule34<'a> for Params<'a> {
+impl<'a> R34Params<'a> {
+    /// Init params
+    #[inline]
+    pub fn init() -> Self {
+        Self::default()
+    }
     /// Set positive tags
     ///
     /// ```
     /// use shuller::prelude::*;
     ///
-    /// let result = Params::init()
+    /// let result = R34Params::init()
     ///     .positive_tags(vec!["molly"]);
     ///
     /// ```
-    fn positive_tags(mut self, mut tags: Vec<&'a str>) -> Self {
+    #[inline]
+    pub fn positive_tags(mut self, mut tags: Vec<&'a str>) -> Self {
         self.positive_tags.append(&mut tags);
         self
     }
@@ -82,11 +107,12 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// ```
     /// use shuller::prelude::*;
     ///
-    /// let result = Params::init()
+    /// let result = R34Params::init()
     ///     .negative_tags(vec!["ai_generated"]);
     ///
     /// ```
-    fn negative_tags(mut self, mut tags: Vec<&'a str>) -> Self {
+    #[inline]
+    pub fn negative_tags(mut self, mut tags: Vec<&'a str>) -> Self {
         self.negative_tags.append(&mut tags);
         self
     }
@@ -97,11 +123,12 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// ```
     /// use shuller::prelude::*;
     ///
-    /// let result = Params::init()
+    /// let result = R34Params::init()
     ///     .limit(2);
     ///
     /// ```
-    fn limit(mut self, limit: u16) -> Self {
+    #[inline]
+    pub fn limit(mut self, limit: u16) -> Self {
         if limit > 1000 {
             eprintln!("Limit is greater then expected:");
             eprintln!("Expected: any numbers <= 1000, got: {0}", limit);
@@ -118,11 +145,12 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// ```
     /// use shuller::prelude::*;
     ///
-    /// let result = Params::init()
+    /// let result = R34Params::init()
     ///     .page(2);
     ///
     /// ```
-    fn page(mut self, page: u16) -> Self {
+    #[inline]
+    pub fn page(mut self, page: u16) -> Self {
         self.page = page;
         self
     }
@@ -131,119 +159,36 @@ impl<'a> Rule34<'a> for Params<'a> {
     /// ```
     /// use shuller::prelude::*;
     ///
-    /// let result = Params::init()
+    /// let result = R34Params::init()
     ///     .id(2);
     ///
     /// ```
-    fn id(mut self, id: usize) -> Self {
+    #[inline]
+    pub fn id(mut self, id: usize) -> Self {
         self.id = Some(id);
         self
     }
 }
 
-impl MakeLink for Params<'_> {
-    /// # Build
-    ///
-    /// Creates a `Link` for making request.
-    ///
-    /// Need to pass `&Params`
-    ///
-    /// #### Simple example
-    /// ```
-    /// use shuller::prelude::*;
-    ///
-    /// let result = Params::init().make_link();
-    ///
-    /// ```
-    /// #### Basic example
-    /// ```
-    /// use shuller::prelude::*;
-    ///
-    /// let result = Params::init()
-    ///     .positive_tags(vec![":)"])
-    ///     .negative_tags(vec![":("])
-    ///     .limit(5)
-    ///     .page(2)
-    ///     .make_link();
-    ///
-    /// ```
-    /// #### Example with id
-    ///
-    /// We may not use other options since we use the specific id
-    /// ```
-    /// use shuller::prelude::*;
-    ///
-    /// let result = Params::init()
-    ///     .id(99999)
-    ///     .make_link();
-    ///
-    /// ```
-    fn make_link(&self) -> crate::error::Result<Url> {
-        if let Some(id) = self.id {
-            return Ok(Url::parse_with_params(
-                "https://api.rule34.xxx/index.php?",
-                [
-                    ("page", self.p),
-                    ("s", self.s),
-                    ("q", self.q),
-                    ("tags", self.tags_suppress().as_ref()),
-                    ("json", self.json_convert().to_string().as_ref()),
-                    ("limit", self.limit.to_string().as_ref()),
-                    ("pid", self.page.to_string().as_ref()),
-                    ("id", id.to_string().as_ref()),
-                ],
-            )?);
-        }
-        Ok(Url::parse_with_params(
-            "https://api.rule34.xxx/index.php?",
-            [
-                ("page", self.p),
-                ("s", self.s),
-                ("q", self.q),
-                ("tags", self.tags_suppress().as_ref()),
-                ("json", self.json_convert().to_string().as_ref()),
-                ("limit", self.limit.to_string().as_ref()),
-                ("pid", self.page.to_string().as_ref()),
-            ],
-        )?)
-    }
-}
-
-impl Search for Params<'_> {}
-
-impl Params<'_> {
-    /// Combination 2 lists of tags in one for query
-    fn tags_suppress(&self) -> String {
-        let pt = self.positive_tags.join(" ");
-        let nt: Vec<String> = self
-            .negative_tags
-            .iter()
-            .map(|x| format!("-{}", x))
-            .collect();
-        let nt = nt.join(" ");
-        format!("{} {}", pt, nt)
-    }
-
-    fn json_convert(&self) -> u8 {
-        if self.json {
-            1
-        } else {
-            0
-        }
-    }
-}
+#[async_trait]
+impl JsonDownload<Posts> for R34Params<'_> {}
 
 #[cfg(test)]
 mod tests {
 
-    use super::*;
+    // use super::*;
+
+    use uller::MakeLink;
+    use url::Url;
+
+    use crate::prelude::R34Params;
 
     #[test]
     fn init() {
-        let result = Params::init();
+        let result = R34Params::init();
         assert_eq!(
             result,
-            Params {
+            R34Params {
                 p: "dapi",
                 s: "post",
                 q: "index",
@@ -259,10 +204,10 @@ mod tests {
 
     #[test]
     fn init_with_id() {
-        let result = Params::init().id(2);
+        let result = R34Params::init().id(2);
         assert_eq!(
             result,
-            Params {
+            R34Params {
                 p: "dapi",
                 s: "post",
                 q: "index",
@@ -278,10 +223,10 @@ mod tests {
 
     #[test]
     fn positive_params() {
-        let result = Params::init().positive_tags(vec!["test"]);
+        let result = R34Params::init().positive_tags(vec!["test"]);
         assert_eq!(
             result,
-            Params {
+            R34Params {
                 p: "dapi",
                 s: "post",
                 q: "index",
@@ -296,10 +241,10 @@ mod tests {
     }
     #[test]
     fn negative_params() {
-        let result = Params::init().negative_tags(vec!["test"]);
+        let result = R34Params::init().negative_tags(vec!["test"]);
         assert_eq!(
             result,
-            Params {
+            R34Params {
                 p: "dapi",
                 s: "post",
                 q: "index",
@@ -314,10 +259,10 @@ mod tests {
     }
     #[test]
     fn limit() {
-        let result = Params::init().limit(30);
+        let result = R34Params::init().limit(30);
         assert_eq!(
             result,
-            Params {
+            R34Params {
                 p: "dapi",
                 s: "post",
                 q: "index",
@@ -332,10 +277,10 @@ mod tests {
     }
     #[test]
     fn limit_greaten() {
-        let result = Params::init().limit(1001);
+        let result = R34Params::init().limit(1001);
         assert_eq!(
             result,
-            Params {
+            R34Params {
                 p: "dapi",
                 s: "post",
                 q: "index",
@@ -350,23 +295,23 @@ mod tests {
     }
     #[test]
     fn tag_suppress() {
-        let result = Params::init()
+        use crate::tag_suppress;
+        let result = R34Params::init()
             .negative_tags(vec!["test"])
-            .positive_tags(vec!["test"])
-            .tags_suppress();
-        assert_eq!(result, format!("test -test"))
+            .positive_tags(vec!["test"]);
+
+        assert_eq!(
+            tag_suppress!(result.positive_tags, result.negative_tags),
+            format!("test -test")
+        )
     }
-    #[test]
-    fn json_convert() {
-        let result = Params::init().json_convert();
-        assert_eq!(result, 1)
-    }
+
     #[test]
     fn page() {
-        let result = Params::init().page(30);
+        let result = R34Params::init().page(30);
         assert_eq!(
             result,
-            Params {
+            R34Params {
                 p: "dapi",
                 s: "post",
                 q: "index",
@@ -381,13 +326,12 @@ mod tests {
     }
     #[test]
     fn build() {
-        let result = Params::init()
+        let result = R34Params::init()
             .negative_tags(vec!["ai_generated"])
             .positive_tags(vec!["anime", "base", "sunglasses"])
             .limit(5)
             .page(2)
-            .make_link()
-            .unwrap();
+            .url_generate();
         let expected = Url::parse_with_params(
             "https://api.rule34.xxx/index.php?",
             [

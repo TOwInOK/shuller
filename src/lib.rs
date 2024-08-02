@@ -4,92 +4,72 @@
 //! and
 //! Getting some data from links
 //!
-//!
-//! # Example via macro
-//!
-//! ```
-//! use shuller::prelude::*;
-//!
-//! async fn example() {
-//! let instance: Posts = rule34!(vec!["dark", "fish"], vec!["ai_generated"])
-//!         .search()
-//!         .await
-//!         .unwrap();
-//!     println!("{:#?}", instance.get_s_url());
-//! }
-//! ```
-//!
 //! # Example
 //!
 //! ```
 //! use shuller::prelude::*;
 //!
 //! async fn example() {
-//!     let instance: Posts = Params::init()
+//!     let instance: Posts = R34Params::init()
 //!         .positive_tags(vec!["dark", "fish"])
 //!         .negative_tags(vec!["ai_generated"])
-//!         .search()
+//!         .limit(3)
+//!         .download()
 //!         .await
 //!         .unwrap();
-//!     println!("{:#?}", instance.get_urls_ext())
+//!         println!("{:#?}", instance.get_urls_ext())
 //! }
 //! ```
 //!
-//! # Example via enum
+//! # Example via macro
 //!
 //! ```
 //! use shuller::prelude::*;
 //!
-//! async fn example() {
-//!     let instance: Posts = Rules::Rule34(Params::init())
-//!         .search()
-//!         .await
-//!         .unwrap();
-//!     println!("{:#?}", instance.get_s_url());
+//! async fn macro_normal() {
+//!     let instance = R34!(
+//!         p = vec!["dark", "fish"],
+//!         n = vec!["ai_generated"],
+//!         limit = 2,
+//!         page = 2
+//!     )
+//!     .download()
+//!     .await
+//!     .unwrap();
+//!     assert!(instance.get_f_urls().len() == 2)
 //! }
-
-/// # Allow us to make links from any structures
-///
-/// # Examples
-///
-/// ```
-/// use shuller::prelude::*;
-///
-/// async fn print_posts() {
-///     let posts: Result<Posts> = Params::init().search().await;
-///     match posts {
-///         Ok(posts) => {
-///             println!("Posts: {:#?}", posts.get_s_urls());
-///         }
-///         Err(error) => {
-///             eprintln!("Error: {}", error);
-///         }
-///     }
-/// }
-/// ```
-///
-pub mod link;
+//! async fn macro_download() {
+//!     let instance = R34!(D;
+//!         p = vec!["dark", "fish"],
+//!         n = vec!["ai_generated"],
+//!         limit = 2,
+//!         page = 2
+//!     )
+//!     .unwrap();
+//!     assert!(instance.get_f_urls().len() == 2)
+//! }
+//! async fn macro_url() {
+//!     let instance = R34!(U;
+//!         p = vec!["dark", "fish"],
+//!         n = vec!["ai_generated"],
+//!         limit = 2,
+//!         page = 2
+//!     );
+//!     assert!(instance.is_special())
+//! }
+//! ```
 /// Rules for making links
 ///
 /// If you want to create you own rules
-/// just add Traits [`crate::link::make_link::MakeLink`] and [`crate::link::Search`]
-/// and for output own structure you need create own struct which implemented [`serde::de`]
-/// also you can check as example [`crate::rules::rule34::data`] and example in [`crate::link::Search`]
+/// just add Traits [uller::MakeLink] and [uller::JsonDownload] from uller crate
+/// and for output own structure you need create own struct which implemented [serde::Deserialize]
 pub mod rules;
 
-/// Errors for Shuller
-pub mod error;
-
-/// Very cool feature
+/// Just all that you need
 #[allow(unused)]
 pub mod prelude {
-    pub use crate::error::{Error, Result};
-    pub use crate::link::{make_link::MakeLink, Search};
-    pub use crate::rule34;
-    pub use crate::rules::rule34::data::MiniPost;
-    pub use crate::rules::rule34::data::Post;
-    pub use crate::rules::rule34::data::Posts;
-    pub use crate::rules::rule34::params::Params;
-    pub use crate::rules::rule34::rule::Rule34;
-    pub use crate::rules::Rules;
+    pub use crate::rules::rule34::data::{MiniPost, Post, Posts};
+    pub use crate::rules::rule34::params::R34Params;
+    pub use crate::{tag_suppress, toggler, R34};
+    pub use uller::{JsonDownload, MakeLink};
 }

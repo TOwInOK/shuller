@@ -1,75 +1,98 @@
 /// Params for `Rule34` Api
 pub mod params;
-/// This is law of rules!
-pub mod rule;
 
 /// Picture structure
 ///
 /// Contain url's of cdn
 pub mod data;
-
-/// Macros for fast creating rule using specific pattern
+// pub use crate::rules::rule34::params::R34Params;
+// pub use crate::rules::rule34::data::Posts;
+/// Macros for fast creating rule34 params by using specific pattern
 ///
 /// ### Rule34
-/// arguments: `id`; `positive_tag`, `negative_tag`, `limit`, `page`
+/// #### arguments:
+///  * p = `positive_tag`::<[`Vec<String>`]>
+///     - default = []
+///     - optional
+///  * n = `negative_tag`::<[`Vec<String>`]>
+///     - default = []
+///     - optional
+///  * limit = `limit`::<[u64]>
+///     - default = 1
+///     - optional
+///  * page = `page`::<[u64]>
+///     - default = 1
+///     - optional
 ///
-/// ### Example
+/// **or**
 ///
-/// ```
-/// use shuller::prelude::*;
+/// #### argument:
+///  * `id` [usize]::<[usize]>
+///     - default = [None]
+///     - optional
 ///
-/// let instance = rule34!(vec!["dark", "fish"], vec!["ai_generated"]);
-/// let specific_instance_with_id = rule34!(vec![], vec![]; 10542274);
-/// let instance_with_id = rule34!(; 10542274);
-/// ```
+/// #### This macro has 3 mode of work
+///  * Normal -> Give you [crate::rules::rule34::params::R34Params]
+///  * **D** Download -> Give you output [crate::rules::rule34::data::Posts] of [crate::rules::rule34::params::R34Params] url generation
+///  * **U** Url -> Just generate [uller::Url] by [crate::rules::rule34::params::R34Params]
+/// ### Examples
+///  * Normal
+///    ```rust
+///    use shuller::prelude::*;
+///    fn normal() {
+///        let instance = R34!(p = vec!["dark", "fish"], n = vec!["ai_generated"], limit = 1, page = 2);
+///        let instance_with_id = R34!(id = 222222);
+///    }
+///    ```
+///  * **D** Download
+///     ```rust
+///     use shuller::prelude::*;
+///     async fn d() {
+///         let instance = R34!(D; p = vec!["dark", "fish"], n = vec!["ai_generated"], limit = 1, page = 2);
+///         let instance_with_id = R34!(D; id = 222222);
+///     }
+///     ```
+///  * **U** Url
+///     ```rust
+///     use shuller::prelude::*;
+///     async fn u() {
+///         let instance = R34!(U; p = vec!["dark", "fish"], n = vec!["ai_generated"], limit = 1, page = 2);
+///         let instance_with_id = R34!(U; id = 222222);
+///     }
+///     ```
 #[macro_export]
-macro_rules! rule34 {
-    ($positive_tag:expr, $negative_tag:expr, $limit:expr, $page:expr) => {{
-        let params = Params::init()
-            .limit($limit)
-            .page($page)
-            .positive_tags($positive_tag)
-            .negative_tags($negative_tag)
-
-
-        Rules::Rule34(params)
+macro_rules! R34 {
+    ($(p = $positive_tags:expr)? $(,n = $negative_tags:expr)? $(,limit = $limit:expr)? $(,page = $page:expr)?) => {{
+        R34Params::init()
+            $(.limit($limit))?
+            $(.positive_tags($positive_tags))?
+            $(.negative_tags($negative_tags))?
     }};
-    ($positive_tag:expr, $negative_tag:expr, $limit:expr, $page:expr) => {{
-            let params = Params::init()
-                .limit($limit)
-                .page($page)
-                .positive_tags($positive_tag)
-                .negative_tags($negative_tag);
-
-            Rules::Rule34(params)
-        }};
-
-        ($positive_tag:expr, $negative_tag:expr, $limit:expr) => {{
-            let params = Params::init()
-                .limit($limit)
-                .positive_tags($positive_tag)
-                .negative_tags($negative_tag);
-
-            Rules::Rule34(params)
-        }};
-
-        ($positive_tag:expr, $negative_tag:expr $(;$id:expr)?) => {{
-            let params = Params::init()
-                .positive_tags($positive_tag)
-                .negative_tags($negative_tag)
-                $(.id($id))?;
-
-            Rules::Rule34(params)
-        }};
-        ($positive_tag:expr) => {{
-            let params = Params::init().positive_tags($positive_tag);
-
-            Rules::Rule34(params)
-        }};
-        (; $($id:expr)?) => {{
-            let params = Params::init()
-            $(.id($id))?;
-            Rules::Rule34(params)
-        }
-    };
+    ($(id = $id:expr)?) => {{
+        R34Params::init()
+            $(.id($id))?
+    }};
+    (D; $(p = $positive_tags:expr)? $(,n = $negative_tags:expr)? $(,limit = $limit:expr)? $(,page = $page:expr)?) => {{
+        R34Params::init()
+            $(.limit($limit))?
+            $(.positive_tags($positive_tags))?
+            $(.negative_tags($negative_tags))?
+            .download().await
+    }};
+    (D; $(id = $id:expr)?) => {{
+        R34Params::init()
+            $(.id($id))?.download().await
+    }};
+    (U; $(p = $positive_tags:expr)? $(,n = $negative_tags:expr)? $(,limit = $limit:expr)? $(,page = $page:expr)?) => {{
+        R34Params::init()
+            $(.limit($limit))?
+            $(.positive_tags($positive_tags))?
+            $(.negative_tags($negative_tags))?
+            .url_generate()
+    }};
+    (U; $(id = $id:expr)?) => {{
+        R34Params::init()
+            $(.id($id))?
+            .url_generate()
+    }};
 }

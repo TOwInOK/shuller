@@ -2,47 +2,69 @@
 mod tests {
     use std::vec;
 
-    use shuller::{prelude::*, rule34, rules::Rules}; // Импортируйте нужные модули
-
+    use shuller::prelude::*; // Импортируйте нужные модули
     #[tokio::test]
     async fn test_of_work() {
-        let instance: Posts = Params::init()
+        let instance: Posts = R34Params::init()
             .positive_tags(vec!["dark"])
             .negative_tags(vec!["ai_generated"])
             .limit(3)
-            .search()
+            .download()
             .await
             .unwrap();
-        println!("{:#?}", instance.get_s_urls())
+        assert!(instance.get_s_urls().len() == 3)
     }
 
     #[tokio::test]
     async fn check_mini_post() {
-        let instance: Posts = Params::init().id(10542274).search().await.unwrap();
-        println!("{:#?}", instance.get_url_ext())
+        let instance: Posts = R34Params::init().id(10542274).download().await.unwrap();
+        assert!(instance.get_url_ext().is_some())
     }
 
     #[tokio::test]
     async fn check_mini_post_many() {
-        let instance: Posts = Params::init()
+        let instance: Posts = R34Params::init()
             .positive_tags(vec!["dark", "fish"])
             .negative_tags(vec!["ai_generated"])
             .limit(3)
-            .search()
+            .download()
             .await
             .unwrap();
-        println!("{:#?}", instance.get_urls_ext())
+        assert!(instance.get_urls_ext().len() == 3)
     }
 
     #[tokio::test]
-    async fn test_macro() {
-        let instance: Posts = rule34!(vec![], vec![]; 10542274).search().await.unwrap();
-        println!("{:#?}", instance.get_s_url());
+    async fn test_macro_normal() {
+        let instance = R34!(
+            p = vec!["dark", "fish"],
+            n = vec!["ai_generated"],
+            limit = 2,
+            page = 2
+        )
+        .download()
+        .await
+        .unwrap();
+        assert!(instance.get_f_urls().len() == 2)
     }
-
     #[tokio::test]
-    async fn test_via_enum() {
-        let instance: Posts = Rules::Rule34(Params::init()).search().await.unwrap();
-        println!("{:#?}", instance.get_s_url());
+    async fn test_macro_download() {
+        let instance = R34!(D;
+            p = vec!["dark", "fish"],
+            n = vec!["ai_generated"],
+            limit = 2,
+            page = 2
+        )
+        .unwrap();
+        assert!(instance.get_f_urls().len() == 2)
+    }
+    #[tokio::test]
+    async fn test_macro_url() {
+        let instance = R34!(U;
+            p = vec!["dark", "fish"],
+            n = vec!["ai_generated"],
+            limit = 2,
+            page = 2
+        );
+        assert!(instance.is_special())
     }
 }

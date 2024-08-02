@@ -2,22 +2,31 @@
 name = "shuller"
 description = "Lib to get links to images for your favourite tags on rule34 and any"
 repository = "https://github.com/TOwInOK/shuller"
-version = "1.0.6"
+version = "2.0.0"
 edition = "2021"
 authors = ["TOwInOK"]
 license = "MIT"
 readme = "README.md"
 keywords = ["async", "networking", "http", "rule34"]
-categories = ["asynchronous", "web-programming", "parsing", "network-programming", "api-bindings"]
+categories = [
+    "asynchronous",
+    "web-programming",
+    "parsing",
+    "network-programming",
+    "api-bindings",
+]
 documentation = "https://docs.rs/shuller"
 
 
 [dependencies]
 async-trait = "0.1.80"
+syn = "2.0.68"
 reqwest = { version = "0.12.5", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
 thiserror = "1.0.61"
+uller = { version = "0.1.22", features = ["juller"] }
 url = "2.5.2"
+rand = "0.8.5"
 
 [dev-dependencies]
 tokio = { version = "1.38.0", features = ["macros"] }

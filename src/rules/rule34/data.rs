@@ -1,12 +1,12 @@
 use serde::Deserialize;
 
-/// # List of [`Posts`]
+/// List of [Post]
 #[derive(Default, Debug, Clone, PartialEq, Deserialize)]
 pub struct Posts(Vec<Post>);
 
-/// # [`Post`] structure
+/// # Main data structure
 ///
-/// * Post in our context of image structure which contain some urls
+/// * Post data from reqwest, which contains urls as well
 #[derive(Default, Debug, Clone, PartialEq, Deserialize)]
 pub struct Post {
     /// picture in miniature
@@ -39,7 +39,7 @@ pub struct Post {
     pub sample_height: i64,
     /// W of `sample_picture`
     pub sample_width: i64,
-    /// Home many people come on this image?
+    /// Home many people rate this image?
     pub score: i64,
     /// Tags of picture
     pub tags: String,
@@ -48,7 +48,7 @@ pub struct Post {
     // pub comment_count: i64,
 }
 
-/// Less info struct of [`Post`]
+/// Less info struct of [Post]
 #[derive(Debug)]
 pub struct MiniPost<'a> {
     pub id: u64,
@@ -96,7 +96,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_p_urls();
     /// }
     /// ```
@@ -111,7 +111,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_s_urls();
     /// }
     /// ```
@@ -125,7 +125,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding: Posts = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_f_urls();
     /// }
     /// ```
@@ -140,7 +140,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_urls_ext();
     /// }
     /// ```
@@ -153,7 +153,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_url_ext();
     /// }
     /// ```
@@ -166,7 +166,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_p_url();
     /// }
     /// ```
@@ -178,7 +178,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding: Posts = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_s_url();
     /// }
     /// ```
@@ -190,7 +190,7 @@ impl Posts {
     /// use shuller::prelude::*;
     ///
     /// async fn dwl() {
-    ///     let binding: Posts = Params::init().search().await.unwrap();
+    ///     let binding = R34Params::init().download().await.unwrap();
     ///     let result = binding.get_f_url();
     /// }
     /// ```
@@ -201,20 +201,16 @@ impl Posts {
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::*;
+    use uller::JsonDownload;
 
-    #[tokio::test]
-    async fn create_make_link_search() {
-        let binding: Posts = Params::init().search().await.unwrap();
-        let result = binding.get_f_urls();
-        println!("{:#?}", result)
-    }
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn create_make_link_search_with_id() {
         //fishey fishey
-        let binding: Posts = Params::init().id(10542274).search().await.unwrap();
+        let binding = R34Params::init().id(10542274).download().await.unwrap();
         let result = binding.get_f_urls();
-        println!("{:#?}", result)
+        println!("{:#?}", result);
+        assert!(!result.is_empty())
     }
 }
