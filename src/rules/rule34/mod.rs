@@ -70,7 +70,7 @@ pub mod params;
 ///     async fn r() {
 ///         let params = R34!(R;);
 ///         let url = R34!(R; D);
-///         let posts = R34!(R; U);
+///         let posts = R34!(R; U).unwrap();
 ///     }
 ///     ```
 #[macro_export]

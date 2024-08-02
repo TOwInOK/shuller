@@ -57,6 +57,12 @@
 //!     );
 //!     assert!(instance.is_special())
 //! }
+//!
+//! async fn random() {
+//!     let params = R34!(R;);
+//!     let url = R34!(R; D);
+//!     let posts = R34!(R; U).unwrap();
+//! }
 //! ```
 /// Rules for making links
 ///
