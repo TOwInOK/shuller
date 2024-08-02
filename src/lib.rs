@@ -68,8 +68,17 @@ pub mod rules;
 /// Just all that you need
 #[allow(unused)]
 pub mod prelude {
+    #[cfg(feature = "rand")]
+    pub use crate::random_usize;
+
     pub use crate::rules::rule34::data::{MiniPost, Post, Posts};
     pub use crate::rules::rule34::params::R34Params;
     pub use crate::{tag_suppress, toggler, R34};
+
+    #[cfg(feature = "rand")]
+    pub use rand::prelude::ThreadRng;
+    #[cfg(feature = "rand")]
+    pub use rand::Rng;
+
     pub use uller::{JsonDownload, MakeLink};
 }

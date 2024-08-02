@@ -30,3 +30,8 @@ rand = "0.8.5"
 
 [dev-dependencies]
 tokio = { version = "1.38.0", features = ["macros"] }
+shuller = { path = ".", features = ["full"] }
+[features]
+default = []
+full = ["rand"]
+rand = []

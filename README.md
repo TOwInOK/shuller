@@ -4,7 +4,7 @@ Library for link fetching from Rule34 and other implementable sites
 
 **Note** for learn more info about this lib check [doc.rs on crates.io](https://crates.io/crates/shuller)
 
-# Example __**(use macro instead)**__
+# Example **(use macro instead)**
 ```rust
 use shuller::prelude::*;
 async fn example() {
@@ -59,3 +59,12 @@ async fn example() {
         );
     }
     ```
+    * Generate random Params and Url, and download Post with random id
+      ```rust
+      use shuller::prelude::*;
+        async fn r() {
+            let params = R34!(R;);
+            let url = R34!(R; D);
+            let posts = R34!(R; U).unwrap(); // handle error
+        }
+      ```

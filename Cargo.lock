@@ -856,6 +856,7 @@ dependencies = [
  "rand",
  "reqwest",
  "serde",
+ "shuller",
  "syn 2.0.72",
  "thiserror",
  "tokio",

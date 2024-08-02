@@ -67,4 +67,23 @@ mod tests {
         );
         assert!(instance.is_special())
     }
+    #[cfg(feature = "rand")]
+    #[tokio::test]
+    async fn test_macro_random_url() {
+        let instance = R34!(R; U);
+        assert!(instance.is_special())
+    }
+    #[cfg(feature = "rand")]
+    #[tokio::test]
+    async fn test_macro_random_params() {
+        let instance = R34!(R;).url_generate();
+        assert!(instance.is_special())
+    }
+    #[cfg(feature = "rand")]
+    #[tokio::test]
+    async fn test_macro_random_download() {
+        let instance = R34!(R; D).unwrap();
+        let url = uller::Url::parse(instance.get_f_url().unwrap()).unwrap();
+        assert!(url.is_special())
+    }
 }
