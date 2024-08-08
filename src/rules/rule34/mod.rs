@@ -170,7 +170,7 @@ macro_rules! random_usize {
 /// **Note:**
 /// This macro requires the `rand` feature to be enabled.
 ///
-/// /// **Note:**
+/// **Note:**
 /// If `$len` same `$vec` len it return random sorted vec.
 #[cfg(feature = "rand")]
 #[macro_export]
