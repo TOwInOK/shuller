@@ -1,4 +1,6 @@
+#[cfg(feature = "rand")]
 use crate::random_usize;
+
 use crate::rules::rule34::data::Posts;
 use crate::tag_suppress;
 use crate::toggler;
@@ -196,6 +198,7 @@ impl<'a> R34Params<'a> {
     ///     .gen_id();
     ///
     /// ```
+    #[cfg(feature = "rand")]
     pub fn gen_id(mut self) -> Self {
         const MAX_RANDOM_ID: usize = 10900000;
         self.id = Some(random_usize!(MAX_RANDOM_ID));

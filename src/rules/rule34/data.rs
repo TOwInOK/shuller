@@ -1,6 +1,7 @@
-use serde::Deserialize;
-
+#[cfg(feature = "rand")]
 use crate::random_usize_vec;
+
+use serde::Deserialize;
 
 /// List of [Post]
 #[derive(Default, Debug, Clone, PartialEq, Deserialize)]

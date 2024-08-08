@@ -33,5 +33,16 @@ default = []
 full = ["rand"]
 rand = []
 
+[profile.dev]
+opt-level = 1
+debug = true
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = true
+debug = false
+panic = "unwind"
+
 [package.metadata.docs.rs]
 all-features = true
