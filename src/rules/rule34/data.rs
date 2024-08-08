@@ -324,6 +324,12 @@ impl Posts {
 
         random_usize_vec_cloned!(self.get_urls_ext(), size)
     }
+
+    /// Just is_empty()
+    #[inline(always)]
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 }
 
 #[cfg(test)]
