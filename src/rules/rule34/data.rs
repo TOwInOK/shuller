@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use crate::random_usize_vec;
+
 /// List of [Post]
 #[derive(Default, Debug, Clone, PartialEq, Deserialize)]
 pub struct Posts(Vec<Post>);
@@ -49,7 +51,7 @@ pub struct Post {
 }
 
 /// Less info struct of [Post]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MiniPost<'a> {
     pub id: u64,
     /// picture in miniature
@@ -144,6 +146,7 @@ impl Posts {
     ///     let result = binding.get_urls_ext();
     /// }
     /// ```
+    #[inline]
     pub fn get_urls_ext(&self) -> Vec<MiniPost> {
         self.0.iter().map(|x| x.into()).collect()
     }
@@ -157,6 +160,7 @@ impl Posts {
     ///     let result = binding.get_url_ext();
     /// }
     /// ```
+    #[inline]
     pub fn get_url_ext(&self) -> Option<MiniPost> {
         self.0.first().map(|x| x.into())
     }
@@ -170,6 +174,7 @@ impl Posts {
     ///     let result = binding.get_p_url();
     /// }
     /// ```
+    #[inline]
     pub fn get_p_url(&self) -> Option<&str> {
         self.0.first().map(|x| x.preview_url.as_str())
     }
@@ -182,6 +187,7 @@ impl Posts {
     ///     let result = binding.get_s_url();
     /// }
     /// ```
+    #[inline]
     pub fn get_s_url(&self) -> Option<&str> {
         self.0.first().map(|x| x.sample_url.as_str())
     }
@@ -194,8 +200,128 @@ impl Posts {
     ///     let result = binding.get_f_url();
     /// }
     /// ```
+    #[inline]
     pub fn get_f_url(&self) -> Option<&str> {
         self.0.first().map(|x| x.file_url.as_str())
+    }
+
+    /// Make ref from [Posts]
+    #[inline]
+    pub fn data_ref(&self) -> &Vec<Post> {
+        &self.0
+    }
+
+    /// Take [Vec] from [Posts]
+    #[inline]
+    pub fn data(self) -> Vec<Post> {
+        self.0
+    }
+
+    /// Retrieves a specified number of random unique URLs from the collection of F URLs.
+    ///
+    /// **Parameters:**
+    /// - `size`: The number of random unique URLs to retrieve.
+    ///   Must be less than or equal to the total number of F URLs available.
+    ///
+    /// **Returns:**
+    /// - A vector containing `size` random unique file_urls (raw urls) as string slices (`&str`).
+    ///
+    /// **Errors:**
+    /// - If `size` is greater than the number of available F URLs, an assertion will be triggered,
+    ///   and the program will terminate with an error.
+    ///
+    /// **Example usage:**
+    /// ```rust
+    /// use shuller::prelude::*;
+    ///
+    /// async fn get_random_vec_with_links() {
+    ///     let binding = R34Params::init().limit(10).download().await.unwrap();
+    ///     let result = binding.get_random_p_urls(3);
+    ///     println!("{:#?}", result);
+    /// }
+    /// ```
+    ///
+    /// **Note:**
+    /// This function requires the `rand` feature to be enabled, as it relies on the `random_usize_vec` macro
+    /// to select random elements.
+    #[cfg(feature = "rand")]
+    #[inline]
+    pub fn get_random_f_urls(&self, size: usize) -> Vec<&str> {
+        random_usize_vec!(self.get_f_urls(), size)
+    }
+
+    /// Retrieves a specified number of random unique URLs from the collection of F URLs.
+    ///
+    /// **Parameters:**
+    /// - `size`: The number of random unique URLs to retrieve.
+    ///   Must be less than or equal to the total number of F URLs available.
+    ///
+    /// **Returns:**
+    /// - A vector containing `size` random unique preview_urls as string slices (`&str`).
+    ///
+    /// **Errors:**
+    /// - If `size` is greater than the number of available F URLs, an assertion will be triggered,
+    ///   and the program will terminate with an error.
+    ///
+    /// **Example usage:**
+    /// ```rust
+    /// use shuller::prelude::*;
+    ///
+    /// async fn get_random_vec_with_links() {
+    ///     let binding = R34Params::init().limit(10).download().await.unwrap();
+    ///     let result = binding.get_random_p_urls(3);
+    ///     println!("{:#?}", result);
+    /// }
+    /// ```
+    ///
+    /// **Note:**
+    /// This function requires the `rand` feature to be enabled, as it relies on the `random_usize_vec` macro
+    /// to select random elements.
+    #[cfg(feature = "rand")]
+    #[inline]
+    pub fn get_random_p_urls(&self, size: usize) -> Vec<&str> {
+        random_usize_vec!(self.get_p_urls(), size)
+    }
+
+    /// Retrieves a specified number of random unique URLs from the collection of F URLs.
+    ///
+    /// **Parameters:**
+    /// - `size`: The number of random unique URLs to retrieve.
+    ///   Must be less than or equal to the total number of F URLs available.
+    ///
+    /// **Returns:**
+    /// - A vector containing `size` random unique sample urls as string slices (`&str`).
+    ///
+    /// **Errors:**
+    /// - If `size` is greater than the number of available F URLs, an assertion will be triggered,
+    ///   and the program will terminate with an error.
+    ///
+    /// **Example usage:**
+    /// ```rust
+    /// use shuller::prelude::*;
+    ///
+    /// async fn get_random_vec_with_links() {
+    ///     let binding = R34Params::init().limit(10).download().await.unwrap();
+    ///     let result = binding.get_random_s_urls(3);
+    ///     println!("{:#?}", result);
+    /// }
+    /// ```
+    ///
+    /// **Note:**
+    /// This function requires the `rand` feature to be enabled, as it relies on the `random_usize_vec` macro
+    /// to select random elements.
+    #[cfg(feature = "rand")]
+    #[inline]
+    pub fn get_random_s_urls(&self, size: usize) -> Vec<&str> {
+        random_usize_vec!(self.get_s_urls(), size)
+    }
+
+    #[cfg(feature = "rand")]
+    #[inline]
+    pub fn get_random_urls(&self, size: usize) -> Vec<MiniPost> {
+        use crate::random_usize_vec_cloned;
+
+        random_usize_vec_cloned!(self.get_urls_ext(), size)
     }
 }
 
@@ -212,5 +338,14 @@ mod tests {
         let result = binding.get_f_urls();
         println!("{:#?}", result);
         assert!(!result.is_empty())
+    }
+    #[tokio::test]
+    async fn check_error() {
+        let binding = R34Params::init().limit(10).download().await.unwrap();
+        let result = binding.get_f_urls();
+        println!("{:#?}", result);
+        assert!(!result.is_empty());
+        let result = binding.get_random_f_urls(3);
+        println!("{:#?}", result);
     }
 }

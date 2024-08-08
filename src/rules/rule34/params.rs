@@ -1,8 +1,10 @@
+use crate::random_usize;
 use crate::rules::rule34::data::Posts;
 use crate::tag_suppress;
 use crate::toggler;
 use async_trait::async_trait;
 use uller::{JsonDownload, MakeLink, Url};
+
 /// Rule 34 params
 ///
 /// # Example
@@ -184,6 +186,21 @@ impl<'a> R34Params<'a> {
         self.id = Some(id);
         self
     }
+
+    /// Set random id for post
+    ///
+    /// ```
+    /// use shuller::prelude::*;
+    ///
+    /// let result = R34Params::init()
+    ///     .gen_id();
+    ///
+    /// ```
+    pub fn gen_id(mut self) -> Self {
+        const MAX_RANDOM_ID: usize = 10900000;
+        self.id = Some(random_usize!(MAX_RANDOM_ID));
+        self
+    }
 }
 
 #[async_trait]
@@ -363,5 +380,17 @@ mod tests {
         .unwrap();
 
         assert_eq!(result, expected)
+    }
+
+    #[tokio::test]
+    async fn create_many() {
+        let mut instances = vec![];
+        for _ in 0..=5 {
+            instances.push(R34Params::init().gen_id().url_generate().to_string())
+        }
+        for item in instances {
+            // let x = item.join().unwrap();
+            println!("{}", item)
+        }
     }
 }

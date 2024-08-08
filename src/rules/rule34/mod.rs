@@ -116,18 +116,18 @@ macro_rules! R34 {
     // Random Params
     (R;) => {
         R34Params::init()
-            .id(random_usize!(10900000))
+            .gen_id()
     };
     // Random Post
     (R; D) => {
         R34Params::init()
-            .id(random_usize!(10900000))
+            .gen_id()
             .download().await
     };
     // Random Url
     (R; U) => {
         R34Params::init()
-            .id(random_usize!(10900000))
+            .gen_id()
             .url_generate()
     }
 }
@@ -141,6 +141,86 @@ macro_rules! R34 {
 #[macro_export]
 macro_rules! random_usize {
     ($max:expr) => {{
-        rand::thread_rng().gen_range(usize::MIN..$max)
+        use std::time::SystemTime;
+        use tinyrand::{Rand, Seeded};
+        let time = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let mut rand = tinyrand::StdRand::seed(((time >> 64) ^ time) as u64);
+        rand.next_lim_usize($max)
+    }};
+}
+
+/// Generates a vector of random unique elements from a given vector.
+///
+/// **Parameters:**
+/// - `$vec`: The vector from which elements will be selected.
+/// - `$len`: The number of unique elements to return.
+///   Must be less than or equal to the length of `$vec`.
+///
+/// **Returns:**
+/// - A vector containing `$len` random unique elements from `$vec`.
+/// - If `$len` is equal to the length of `$vec`, a randomly shuffled version of `$vec` is returned.
+///
+/// **Errors:**
+/// - If `$len` is greater than the length of `$vec`, an `assert!` will be triggered, and the program will terminate with an error.
+/// - If `$len` is 0 or `$vec` is empty, an empty vector will be returned.
+///
+/// **Note:**
+/// This macro requires the `rand` feature to be enabled.
+///
+/// /// **Note:**
+/// If `$len` same `$vec` len it return random sorted vec.
+#[cfg(feature = "rand")]
+#[macro_export]
+macro_rules! random_usize_vec {
+    ($vec:expr, $len:expr) => {{
+        use $crate::random_usize;
+        assert!($len <= $vec.len(), "given len is more than max len of vec");
+        if $len == 0 || $vec.len() == 0 {
+            return vec![];
+        }
+
+        let mut temp = vec![];
+        let mut indices = std::collections::HashSet::new();
+
+        while indices.len() < $len {
+            let index = random_usize!($vec.len());
+            indices.insert(index);
+        }
+
+        for index in indices {
+            temp.push($vec[index]);
+        }
+
+        temp
+    }};
+}
+
+/// Same [random_usize_vec] with clone
+#[cfg(feature = "rand")]
+#[macro_export]
+macro_rules! random_usize_vec_cloned {
+    ($vec:expr, $len:expr) => {{
+        use $crate::random_usize;
+        assert!($len <= $vec.len(), "given len is more than max len of vec");
+        if $len == 0 || $vec.len() == 0 {
+            return vec![];
+        }
+
+        let mut temp = vec![];
+        let mut indices = std::collections::HashSet::new();
+
+        while indices.len() < $len {
+            let index = random_usize!($vec.len());
+            indices.insert(index);
+        }
+
+        for index in indices {
+            temp.push($vec[index].clone());
+        }
+
+        temp
     }};
 }
