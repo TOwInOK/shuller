@@ -206,7 +206,7 @@ macro_rules! random_usize_vec_cloned {
         use $crate::random_usize;
         assert!($len <= $vec.len(), "given len is more than max len of vec");
         if $len == 0 || $vec.len() == 0 {
-            return vec![];
+            return vec![].into();
         }
 
         let mut temp = vec![];
@@ -221,6 +221,6 @@ macro_rules! random_usize_vec_cloned {
             temp.push($vec[index].clone());
         }
 
-        temp
+        temp.into()
     }};
 }
