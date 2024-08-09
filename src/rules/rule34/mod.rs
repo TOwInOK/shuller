@@ -2,6 +2,8 @@
 ///
 /// Contain url's of cdn
 pub mod data;
+/// fit data of [Post]
+pub mod mini_data;
 /// Params for `Rule34` Api
 pub mod params;
 // pub use crate::rules::rule34::params::R34Params;
