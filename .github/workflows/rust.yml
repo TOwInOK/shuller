@@ -17,6 +17,9 @@ jobs:
       with:
         toolchain: stable
     - uses: Swatinem/rust-cache@v2.7.3
+      with:
+          save-if: true
+          cache-all-crates: true
     - run: cargo check -r -F full --locked
        
   Clippy:
@@ -32,7 +35,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo clippy --all-targets -F full -r -- -D warnings --frozen
+      - run: cargo clippy --all-targets -F full -r -- -D warnings --locked
       
   Doc-check:
     needs: 
@@ -47,7 +50,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo test -F full --doc -r --frozen
+      - run: cargo test -F full --doc -r --locked
 
   Lib-check:
     needs: 
@@ -62,7 +65,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo test -p shuller -F full -r --lib --frozen
+      - run: cargo test -p shuller -F full -r --lib --locked
 
   Lib-and-Tests-check:
     needs: 
@@ -77,7 +80,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo test -p shuller tests -F full -r --frozen
+      - run: cargo test -p shuller tests -F full -r --locked
 
   take-version:
     needs: 
@@ -87,41 +90,23 @@ jobs:
       - Lib-and-Tests-check
     runs-on: ubuntu-latest
     steps:
-      - name: Set Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      - name: Save version as artifact
+        
+      - name: Save version 
         run: |
            version=$(grep 'version =' Cargo.toml | head -n 1 | cut -d '"' -f 2)
-           echo "version=$version" >> $GITHUB_ENV
-           echo "$version" > version.txt
+           echo $version
            
-      - uses: actions/upload-artifact@v3
-        with:
-          name: version
-          path: version.txt
-
-  create-version:
-    needs: take-version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Take version
-        id: version
-        run: |
-          version=$(grep value file | head -n 1)
-          echo "version=$version" >> $GITHUB_ENV
-
       - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
       - name: Make tag
         env:
-          VERSION: ${{ env.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+          git tag "v$version"
+          git push origin "v$version"
               
