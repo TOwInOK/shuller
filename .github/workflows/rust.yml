@@ -15,7 +15,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Make Cache
-    - uses: Swatinem/rust-cache@v2.7.3
+      uses: Swatinem/rust-cache@v2.7.3
       with:
           save-if: true
           cache-all-crates: true
@@ -61,7 +61,7 @@ jobs:
           save-if: false
           shared-key: tests
       - name: Set toolchain
-      - uses: actions-rs/toolchain@v1.0.6
+        uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
           
