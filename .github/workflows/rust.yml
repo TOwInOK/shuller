@@ -1,60 +1,63 @@
 name: CI Rust -> Check code and make git version
 
 on:
-    push:
-          branches: [ "master" ]
-    workflow_dispatch:
-          inputs:
-                  version_type:
-                                description: 'Type of version increment'
-                                required: true
-                                default: 'patch'
-                                options:
-                                        - patch # 1.0.0 -> 1.0.1
-                                        - minor # 1.0.0 -> 1.1.0
-                                        - major # 1.0.0 -> 2.0.0
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Type of version increment"
+        required: true
+        default: "patch"
+        options:
+          - patch # 1.0.0 -> 1.0.1
+          - minor # 1.0.0 -> 1.1.0
+          - major # 1.0.0 -> 2.0.0
 
 env:
-    CARGO_TERM_COLOR: always
+  CARGO_TERM_COLOR: always
 
 jobs:
-      check-code:
-                  runs-on: ubuntu-latest
-                  steps:
-                        - uses: actions/checkout@v4
-                        
-                        - name: Use cached deps
-                          uses: actions/cache@v4
-                          with: 
-                                path: target
-                                key: static-deps-data
-                            
-                        - name: Configurate rust
-                          uses: actions-rs/toolchain@v1.0.6
-                          with: 
-                                toolchain: stable
-                          
-                        - name: clippy
-                          run: cargo clippy --all-targets -F full -r -- -D warnings
-                    
-                        # Test all code by parts
-                        
-                        - name: Test code
-                          run: cargo test -p shuller -F full -r --lib;
-                    
-                        - name: Test code and tests
-                          run: cargo test -p shuller tests -F full -r;
-                    
-                        - name: Tests doc
-                          run: cargo test -F full --doc -r
-    
-      create-version:
-                      needs: check-code
-                      runs-on: ubuntu-latest
-                      steps:
-                            - name: Create Release Pull Request
-                              uses: cargo-bins/release-pr@v2.1.1
-                              with:
-                                   github-token: ${{ secrets.GITHUB_TOKEN }}
-                                   version: ${{ github.event.inputs.version_type }}
-                                   pr-title: "release: v<%= version.actual %>"
+  check-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use cached deps
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: static-deps-data
+
+      - name: Configurate rust
+        uses: actions-rs/toolchain@v1.0.6
+        with:
+          toolchain: stable
+
+      - name: clippy
+        run: cargo clippy --all-targets -F full -r -- -D warnings
+
+      # Test all code by parts
+
+      - name: Test code
+        run: cargo test -p shuller -F full -r --lib;
+
+      - name: Test code and tests
+        run: cargo test -p shuller tests -F full -r;
+
+      - name: Tests doc
+        run: cargo test -F full --doc -r
+
+  create-version:
+    needs: check-code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log version type
+        run: echo "Version type ${{ github.event.inputs.version_type }}"
+				
+      - name: Create Release Pull Request
+        uses: cargo-bins/release-pr@v2.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.inputs.version_type }}
+          pr-title: "release: v<%= version.actual %>"
