@@ -17,6 +17,7 @@ jobs:
       with:
         toolchain: stable
     - uses: Swatinem/rust-cache@v2.7.3
+    - run: cargo check -r -F full --frozen
        
   Clippy:
     needs: 
@@ -31,7 +32,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo clippy --all-targets -F full -r -- -D warnings
+      - run: cargo clippy --all-targets -F full -r -- -D warnings --frozen
       
   Doc-check:
     needs: 
@@ -46,7 +47,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo test -F full --doc -r
+      - run: cargo test -F full --doc -r --frozen
 
   Lib-check:
     needs: 
@@ -61,7 +62,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo test -p shuller -F full -r --lib;
+      - run: cargo test -p shuller -F full -r --lib --frozen
 
   Lib-and-Tests-check:
     needs: 
@@ -76,7 +77,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: cargo test -p shuller tests -F full -r;
+      - run: cargo test -p shuller tests -F full -r --frozen
 
   take-version:
     needs: 
