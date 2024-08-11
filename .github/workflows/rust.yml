@@ -136,7 +136,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ env.version }}
         run: |
-          # Создаём и пушим тег
+          if git tag -l "v$VERSION"; then
+            git tag -d "v$VERSION"
+            git push origin --delete "v$VERSION"
+          fi
           git tag "v$VERSION"
           git push origin "v$VERSION"
               
