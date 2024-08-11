@@ -18,10 +18,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  check:
     runs-on: ubuntu-latest
- 
     steps:
     - uses: actions/checkout@v4
     
@@ -51,10 +49,27 @@ jobs:
 
     - name: Tests doc
       run: cargo test -F full --doc -r
-      
+
+  build:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use cached deps
+      uses: actions/cache@v4
+      with: 
+        path: target/release
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
     - name: Build
       run: cargo build -F full -r
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
     - name: Publish to crates.io
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
       env:
