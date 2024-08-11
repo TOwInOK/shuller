@@ -43,6 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - uses: actions/cache@v4
+        with:
+          path: target
+          key: static-deps-data
+          
       - name: Create Release Pull Request
         uses: cargo-bins/release-pr@v2.1.1
         with:
