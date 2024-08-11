@@ -54,7 +54,6 @@ jobs:
     steps:
       - name: Log version type
         run: echo ${{ github.event.inputs.version_type }}
-	
       - name: Create Release Pull Request
         uses: cargo-bins/release-pr@v2.1.1
         with:
