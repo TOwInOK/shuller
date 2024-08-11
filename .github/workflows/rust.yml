@@ -8,49 +8,119 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check-code:
+
+  make-cache:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions-rs/toolchain@v1.0.6
+      with:
+        toolchain: stable
+    - uses: Swatinem/rust-cache@v2.7.3
+       
+  Clippy:
+    needs: 
+      - make-cache
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use cached deps
-        uses: actions/cache@v4
+      - uses: Swatinem/rust-cache@v2.7.3
         with:
-          path: target
-          key: static-deps-data
-
-      - name: Configurate rust
-        uses: actions-rs/toolchain@v1.0.6
+          save-if: false
+      - uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
 
-      - name: clippy
-        run: cargo clippy --all-targets -F full -r -- -D warnings
-
-      # Test all code by parts
-
-      - name: Test code
-        run: cargo test -p shuller -F full -r --lib;
-
-      - name: Test code and tests
-        run: cargo test -p shuller tests -F full -r;
-
-      - name: Tests doc
-        run: cargo test -F full --doc -r
-
-  create-version:
-    needs: check-code
+      - run: cargo clippy --all-targets -F full -r -- -D warnings
+      
+  Doc-check:
+    needs: 
+      - make-cache
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - uses: actions/cache@v4
+      - uses: Swatinem/rust-cache@v2.7.3
         with:
-          path: target
-          key: static-deps-data
-          
-      - name: Create Release Pull Request
-        uses: cargo-bins/release-pr@v2.1.1
+          save-if: false
+      - uses: actions-rs/toolchain@v1.0.6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: patch
+          toolchain: stable
+
+      - run: cargo test -F full --doc -r
+
+  Lib-check:
+    needs: 
+      - make-cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2.7.3
+        with:
+          save-if: false
+      - uses: actions-rs/toolchain@v1.0.6
+        with:
+          toolchain: stable
+
+      - run: cargo test -p shuller -F full -r --lib;
+
+  Lib-and-Tests-check:
+    needs: 
+      - make-cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2.7.3
+        with:
+          save-if: false
+      - uses: actions-rs/toolchain@v1.0.6
+        with:
+          toolchain: stable
+
+      - run: cargo test -p shuller tests -F full -r;
+
+  take-version:
+    needs: 
+      - Clippy
+      - Doc-check
+      - Lib-check
+      - Lib-and-Tests-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Checkout
+        uses: actions/checkout@v4
+      - name: Save version as artifact
+        run: |
+           version=$(grep 'version =' Cargo.toml | head -n 1 | cut -d '"' -f 2)
+           echo "version=$version" >> $GITHUB_ENV
+           echo "$version" > version.txt
+           
+      - uses: actions/upload-artifact@v3
+        with:
+          name: version
+          path: version.txt
+
+  create-version:
+    needs: take-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Take version
+        id: version
+        run: |
+          version=$(grep value file | head -n 1)
+          echo "version=$version" >> $GITHUB_ENV
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Make tag
+        env:
+          VERSION: ${{ env.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+              
