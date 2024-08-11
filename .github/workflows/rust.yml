@@ -3,16 +3,6 @@ name: CI Rust -> Check code and make git version
 on:
   push:
     branches: ["master"]
-  workflow_dispatch:
-    inputs:
-      version_type:
-        description: "Type of version increment"
-        required: true
-        default: "patch"
-        options:
-          - patch # 1.0.0 -> 1.0.1
-          - minor # 1.0.0 -> 1.1.0
-          - major # 1.0.0 -> 2.0.0
 
 env:
   CARGO_TERM_COLOR: always
@@ -52,11 +42,9 @@ jobs:
     needs: check-code
     runs-on: ubuntu-latest
     steps:
-      - name: Log version type
-        run: echo ${{ github.event.inputs.version_type }}
       - name: Create Release Pull Request
         uses: cargo-bins/release-pr@v2.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ github.event.inputs.version_type }}
+          version: path
           pr-title: "release: v<%= version.actual %>"
