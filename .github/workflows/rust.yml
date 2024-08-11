@@ -1,82 +1,60 @@
-name: CI/CD Rust -> Check code and push to crates.io
+name: CI Rust -> Check code and make git version
 
 on:
-  push:
-    branches: [ "master" ]
-  workflow_dispatch:
-    inputs:
-      version_type:
-        description: 'Type of version increment'
-        required: true
-        default: 'patch'
-        options:
-          - patch # 1.0.0 -> 1.0.1
-          - minor # 1.0.0 -> 1.1.0
-          - major # 1.0.0 -> 2.0.0
+    push:
+          branches: [ "master" ]
+    workflow_dispatch:
+          inputs:
+                  version_type:
+                                description: 'Type of version increment'
+                                required: true
+                                default: 'patch'
+                                options:
+                                        - patch # 1.0.0 -> 1.0.1
+                                        - minor # 1.0.0 -> 1.1.0
+                                        - major # 1.0.0 -> 2.0.0
 
 env:
-  CARGO_TERM_COLOR: always
+    CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+      check-code:
+                  runs-on: ubuntu-latest
+                  steps:
+                        - uses: actions/checkout@v4
+                        
+                        - name: Use cached deps
+                          uses: actions/cache@v4
+                          with: 
+                                path: target
+                                key: static-deps-data
+                            
+                        - name: Configurate rust
+                          uses: actions-rs/toolchain@v1.0.6
+                          with: 
+                                toolchain: stable
+                          
+                        - name: clippy
+                          run: cargo clippy --all-targets -F full -r -- -D warnings
+                    
+                        # Test all code by parts
+                        
+                        - name: Test code
+                          run: cargo test -p shuller -F full -r --lib;
+                    
+                        - name: Test code and tests
+                          run: cargo test -p shuller tests -F full -r;
+                    
+                        - name: Tests doc
+                          run: cargo test -F full --doc -r
     
-    - name: Use cached deps
-      uses: actions/cache@v4
-      with: 
-        path: target/release
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-
-
-    - name: Configurate rust
-      uses: actions-rs/toolchain@v1.0.6
-      with: 
-          toolchain: stable
-      
-    - name: clippy
-      run: cargo clippy --all-targets -F full -r -- -D warnings
-
-    # Test all code by parts
-    
-    - name: Test code
-      run: cargo test -p shuller -F full -r --lib;
-
-    - name: Test code and tests
-      run: cargo test -p shuller tests -F full -r;
-
-    - name: Tests doc
-      run: cargo test -F full --doc -r
-
-  build:
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use cached deps
-      uses: actions/cache@v4
-      with: 
-        path: target/release
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-
-    - name: Build
-      run: cargo build -F full -r
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Publish to crates.io
-      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      env:
-        CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
-        EVENT_TYPE: ${{ github.event.inputs.version_type }}
-      run: | 
-        cargo install cargo-release
-        cargo publish $EVENT_TYPE --publish --token $CARGO_REGISTRY_TOKEN -- -F full --color=always
-
-      
+      create-version:
+                      needs: check-code
+                      runs-on: ubuntu-latest
+                      steps:
+                            - name: Create Release Pull Request
+                              uses: cargo-bins/release-pr@v2.1.1
+                              with:
+                                   github-token: ${{ secrets.GITHUB_TOKEN }}
+                                   version: ${{ github.event.inputs.version_type }}
+                                   pr-title: "release: v<%= version.actual %>"
