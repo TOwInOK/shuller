@@ -20,10 +20,11 @@ jobs:
           save-if: true
           cache-all-crates: true
           shared-key: tests
+          
     - name: Set Toolchain
-      uses: actions-rs/toolchain@v1.0.6
-      with:
-        toolchain: stable
+      run: rustup default stable
+    - name: Update Toolchain
+      run: rustup update stable
 
     - name: Job
       run: cargo build -F full --locked
