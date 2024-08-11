@@ -17,7 +17,7 @@ jobs:
       with:
         toolchain: stable
     - uses: Swatinem/rust-cache@v2.7.3
-    - run: cargo check -r -F full --frozen
+    - run: cargo check -r -F full --locked
        
   Clippy:
     needs: 
