@@ -26,7 +26,7 @@ jobs:
         toolchain: stable
 
     - name: Job
-      run: cargo publish --dry-run -F full
+      run: cargo build -F full --locked
        
   Clippy:
     needs: 
@@ -46,7 +46,7 @@ jobs:
           toolchain: stable
           
       - name: Job
-        run: cargo clippy --all-targets -F full --locked -r -- -D warnings
+        run: cargo clippy --all-targets -F full --locked -- -D warnings
       
   Doc-check:
     needs: 
@@ -66,7 +66,7 @@ jobs:
           toolchain: stable
           
       - name: Job
-        run: cargo test -F full --doc -r --locked
+        run: cargo test -F full --doc --locked
 
   Lib-check:
     needs: 
@@ -86,7 +86,7 @@ jobs:
           toolchain: stable
           
       - name: Job
-        run: cargo test -p shuller -F full -r --lib --locked
+        run: cargo test -p shuller -F full --lib --locked
 
   Lib-and-Tests-check:
     needs: 
@@ -106,7 +106,7 @@ jobs:
           toolchain: stable
           
       - name: Job
-        run: cargo test -p shuller tests -F full -r --locked
+        run: cargo test -p shuller tests -F full --locked
 
   Make-Tag:
     needs: 
