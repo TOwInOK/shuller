@@ -38,7 +38,7 @@ jobs:
       - name: Load Cache
         uses: Swatinem/rust-cache@v2.7.3
         with:
-          save-if: false
+          # save-if: false
           shared-key: tests
       - name: Set Toolchain
         uses: actions-rs/toolchain@v1.0.6
@@ -58,7 +58,7 @@ jobs:
       - name: Load Cache
         uses: Swatinem/rust-cache@v2.7.3
         with:
-          save-if: false
+          # save-if: false
           shared-key: tests
       - name: Set toolchain
         uses: actions-rs/toolchain@v1.0.6
@@ -78,7 +78,7 @@ jobs:
       - name: Load Cache
         uses: Swatinem/rust-cache@v2.7.3
         with:
-          save-if: false
+          # save-if: false
           shared-key: tests
       - name: Set Toolchain
         uses: actions-rs/toolchain@v1.0.6
@@ -98,7 +98,7 @@ jobs:
       - name: Load Cache
         uses: Swatinem/rust-cache@v2.7.3
         with:
-          save-if: false
+          # save-if: false
           shared-key: tests
       - name: Set Toolchain
         uses: actions-rs/toolchain@v1.0.6
@@ -121,7 +121,6 @@ jobs:
         
       - name: Save version 
         run: |
-           # Извлекаем версию из Cargo.toml
            version=$(grep '^version =' Cargo.toml | head -n 1 | cut -d '"' -f 2)
            echo "version=$version" >> $GITHUB_ENV
            echo "Extracted version: $version"
@@ -134,12 +133,11 @@ jobs:
       - name: Make tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ env.version }}
         run: |
-          if git tag -l "v$VERSION"; then
-            git tag -d "v$VERSION"
-            git push origin --delete "v$VERSION"
+          if git rev-parse "v$version" >/dev/null 2>&1; then
+            git tag -d "v$version"
+            git push origin --delete "v$version"
           fi
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+          git tag "v$version"
+          git push origin "v$version"
               
