@@ -42,6 +42,7 @@ jobs:
     needs: check-code
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Create Release Pull Request
         uses: cargo-bins/release-pr@v2.1.1
         with:
