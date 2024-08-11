@@ -26,7 +26,7 @@ jobs:
         toolchain: stable
 
     - name: Job
-      run: cargo check -r -F full --locked
+      run: cargo publish --dry-run -F full
        
   Clippy:
     needs: 
@@ -121,8 +121,10 @@ jobs:
         
       - name: Save version 
         run: |
-           version=$(grep 'version =' Cargo.toml | head -n 1 | cut -d '"' -f 2)
-           echo $version
+           # Извлекаем версию из Cargo.toml
+           version=$(grep '^version =' Cargo.toml | head -n 1 | cut -d '"' -f 2)
+           echo "version=$version" >> $GITHUB_ENV
+           echo "Extracted version: $version"
            
       - name: Configure Git
         run: |
@@ -132,7 +134,9 @@ jobs:
       - name: Make tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ env.version }}
         run: |
-          git tag "v$version"
-          git push origin "v$version"
+          # Создаём и пушим тег
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
               
