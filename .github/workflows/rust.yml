@@ -12,77 +12,103 @@ jobs:
   make-cache:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions-rs/toolchain@v1.0.6
-      with:
-        toolchain: stable
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Make Cache
     - uses: Swatinem/rust-cache@v2.7.3
       with:
           save-if: true
           cache-all-crates: true
-    - run: cargo check -r -F full --locked
+          shared-key: tests
+    - name: Set Toolchain
+      uses: actions-rs/toolchain@v1.0.6
+      with:
+        toolchain: stable
+
+    - name: Job
+      run: cargo check -r -F full --locked
        
   Clippy:
     needs: 
       - make-cache
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2.7.3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Load Cache
+        uses: Swatinem/rust-cache@v2.7.3
         with:
           save-if: false
-      - uses: actions-rs/toolchain@v1.0.6
+          shared-key: tests
+      - name: Set Toolchain
+        uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
-
-      - run: cargo clippy --all-targets -F full -r -- -D warnings --locked
+          
+      - name: Job
+        run: cargo clippy --all-targets -F full --locked -r -- -D warnings
       
   Doc-check:
     needs: 
       - make-cache
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2.7.3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Load Cache
+        uses: Swatinem/rust-cache@v2.7.3
         with:
           save-if: false
+          shared-key: tests
+      - name: Set toolchain
       - uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
-
-      - run: cargo test -F full --doc -r --locked
+          
+      - name: Job
+        run: cargo test -F full --doc -r --locked
 
   Lib-check:
     needs: 
       - make-cache
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2.7.3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Load Cache
+        uses: Swatinem/rust-cache@v2.7.3
         with:
           save-if: false
-      - uses: actions-rs/toolchain@v1.0.6
+          shared-key: tests
+      - name: Set Toolchain
+        uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
-
-      - run: cargo test -p shuller -F full -r --lib --locked
+          
+      - name: Job
+        run: cargo test -p shuller -F full -r --lib --locked
 
   Lib-and-Tests-check:
     needs: 
       - make-cache
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2.7.3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Load Cache
+        uses: Swatinem/rust-cache@v2.7.3
         with:
           save-if: false
-      - uses: actions-rs/toolchain@v1.0.6
+          shared-key: tests
+      - name: Set Toolchain
+        uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
+          
+      - name: Job
+        run: cargo test -p shuller tests -F full -r --locked
 
-      - run: cargo test -p shuller tests -F full -r --locked
-
-  take-version:
+  Make-Tag:
     needs: 
       - Clippy
       - Doc-check
