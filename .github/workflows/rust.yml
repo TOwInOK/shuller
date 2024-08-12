@@ -21,10 +21,8 @@ jobs:
           cache-all-crates: true
           shared-key: tests
           
-    - name: Set Toolchain
-      run: rustup default stable
     - name: Update Toolchain
-      run: rustup update stable
+      run: rustup toolchain install stable --profile minimal --no-self-update
 
     - name: Job
       run: cargo build -F full --locked
@@ -42,8 +40,8 @@ jobs:
           # save-if: false
           shared-key: tests
           key: clippy
-      - name: Toolchain info
-        run: rustc --version
+      - name: Update Toolchain
+        run: rustup toolchain install stable --profile minimal --no-self-update
           
       - name: Job
         run: cargo clippy --all-targets -F full --locked -- -D warnings
@@ -61,8 +59,8 @@ jobs:
           # save-if: false
           shared-key: tests
           key: doc
-      - name: Toolchain info
-        run: rustc --version
+      - name: Update Toolchain
+        run: rustup toolchain install stable --profile minimal --no-self-update
           
       - name: Job
         run: cargo test -F full --doc --locked
@@ -80,8 +78,8 @@ jobs:
           # save-if: false
           shared-key: tests
           key: lib
-      - name: Toolchain info
-        run: rustc --version
+      - name: Update Toolchain
+        run: rustup toolchain install stable --profile minimal --no-self-update
         
       - name: Job
         run: cargo test -p shuller -F full --lib --locked
@@ -99,8 +97,8 @@ jobs:
           # save-if: false
           shared-key: tests
           key: lib-test
-      - name: Toolchain info
-        run: rustc --version
+      - name: Update Toolchain
+        run: rustup toolchain install stable --profile minimal --no-self-update
           
       - name: Job
         run: cargo test -p shuller tests -F full --locked
